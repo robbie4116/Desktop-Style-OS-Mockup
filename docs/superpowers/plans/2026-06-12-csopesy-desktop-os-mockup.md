@@ -79,13 +79,17 @@ Desktop-Style-OS-Mockup/
 
 - [ ] **Step 1: Download the three single-header libraries**
 
-Fetch known-good versions:
+Fetch pinned, reproducible versions (a fixed stb commit and a tagged doctest
+release — never `master`, which is a moving target):
 ```bash
-curl -L -o third_party/stb_image.h https://raw.githubusercontent.com/nothings/stb/master/stb_image.h
-curl -L -o third_party/stb_image_write.h https://raw.githubusercontent.com/nothings/stb/master/stb_image_write.h
-curl -L -o third_party/doctest.h https://raw.githubusercontent.com/doctest/doctest/master/doctest/doctest.h
+STB=f0569113c93ad095470c54bf34a17b36646bbbb1   # known-good stb commit
+curl -L -o third_party/stb_image.h        https://raw.githubusercontent.com/nothings/stb/$STB/stb_image.h
+curl -L -o third_party/stb_image_write.h  https://raw.githubusercontent.com/nothings/stb/$STB/stb_image_write.h
+curl -L -o third_party/doctest.h          https://raw.githubusercontent.com/doctest/doctest/v2.4.11/doctest/doctest.h
 ```
 Expected: three files exist, each > 10 KB. Verify with `ls -l third_party`.
+> If a pinned URL 404s, fall back to the latest release tag and record the
+> resolved version in a comment at the top of the file.
 
 - [ ] **Step 2: Commit**
 ```bash
@@ -210,6 +214,12 @@ Create empty-but-valid placeholders for every non-`main` source referenced above
 - `src/logic/clock_format.cpp`, `src/logic/boot_state.cpp`, `src/logic/process_model.cpp`, `src/logic/texture_paths.cpp` — each just `// implemented in Chunk 2`
 - `src/render/boot_screen.cpp`, `splash_screen.cpp`, `desktop.cpp`, `taskbar.cpp`, `texture_loader.cpp`, `windows/file_explorer.cpp`, `windows/settings.cpp`, `windows/task_manager.cpp` — each just `// implemented in later chunks`
 - `tools/make_wallpaper.cpp` → `int main(){return 0;}`
+- `tests/test_main.cpp` → the real doctest entry point now (so the test target links in Chunk 1):
+  ```cpp
+  #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+  #include "doctest.h"
+  ```
+  (Task 2.0 then becomes a no-op confirmation that this file exists.)
 - `tests/test_clock_format.cpp`, `test_boot_state.cpp`, `test_process_model.cpp`, `test_cpu_history.cpp`, `test_texture_paths.cpp` — each empty (doctest discovers no tests yet)
 
 - [ ] **Step 3: Write minimal `src/main.cpp` (blank window)**
@@ -291,20 +301,17 @@ git commit -m "build: scaffold CMake project, deps, and blank ImGui window"
 
 **Outcome:** `csopesy_tests` runs and all tests pass. Logic units are implemented ImGui-free.
 
-### Task 2.0: doctest entry point
+### Task 2.0: confirm doctest entry point
 
-**Files:**
-- Create/replace: `tests/test_main.cpp`
+`tests/test_main.cpp` was already created with the doctest main in Chunk 1
+(Task 1.3, Step 2) so the test target links from the start.
 
-- [ ] **Step 1: Write the doctest main**
+- [ ] **Step 1: Verify** `tests/test_main.cpp` contains exactly:
 ```cpp
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
 ```
-- [ ] **Step 2: Commit**
-```bash
-git add tests/test_main.cpp && git commit -m "test: add doctest entry point"
-```
+If missing or different, create it now. No separate commit needed.
 
 ### Task 2.1: clock_format
 
@@ -467,8 +474,10 @@ using namespace csopesy;
 
 TEST_CASE("LCG jitter is deterministic for a given seed") {
     unsigned a = 12345, b = 12345;
-    CHECK(nextUnit(a) == doctest::Approx(nextUnit(b)));
-    CHECK(a == b); // states advanced identically
+    float va = nextUnit(a);
+    float vb = nextUnit(b);
+    CHECK(va == vb);   // exact: same seed -> same value
+    CHECK(a == b);     // states advanced identically
 }
 TEST_CASE("updateProcess keeps cpu and memory within clamped ranges") {
     ProcessRow row{"test.exe", 1000, 20.0f, 100.0f, 99u};
@@ -795,8 +804,10 @@ while (!glfwWindowShouldClose(window) && !ctx.shouldShutdown) {
     ImGui::NewFrame();
 
     // --- input: any click or key skips boot/splash ---
-    ImGuiIO& io = ImGui::GetIO();
-    ctx.skipRequested = io.MouseClicked[0] || io.KeysDown[ImGuiKey_Space] ||
+    // NOTE: v1.91.5 removed the legacy io.KeysDown[]/io.MouseClicked[] IO arrays.
+    // Use the function-based event API exclusively.
+    ctx.skipRequested = ImGui::IsMouseClicked(ImGuiMouseButton_Left) ||
+                        ImGui::IsKeyPressed(ImGuiKey_Space, false) ||
                         ImGui::IsKeyPressed(ImGuiKey_Enter, false) ||
                         ImGui::IsKeyPressed(ImGuiKey_Escape, false);
 
@@ -831,7 +842,7 @@ while (!glfwWindowShouldClose(window) && !ctx.shouldShutdown) {
     glfwSwapBuffers(window);
 }
 ```
-> `ImGuiKey_Space`/`KeysDown` usage: if the installed ImGui version warns on `KeysDown`, use `ImGui::IsKeyPressed(ImGuiKey_Space,false)` instead. Confirm against the fetched v1.91.5 API during implementation.
+> Do NOT use `io.KeysDown[]` or `io.MouseClicked[]` — both were removed in the ImGui keyboard rework and are absent in the pinned v1.91.5. The function-based API (`ImGui::IsMouseClicked`, `ImGui::IsKeyPressed`) shown above is the only correct form.
 
 - [ ] **Step 2: Build** — Run `cmake --build build`. Expected: builds clean.
 
@@ -907,7 +918,8 @@ void renderBootScreen(const AppContext&, double elapsed) {
         ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus);
 
-    int reveal = static_cast<int>(elapsed / 0.18) + 1;
+    // ~0.12s per line so all 20 lines reveal within the 3.0s BIOS duration.
+    int reveal = static_cast<int>(elapsed / 0.12) + 1;
     int total = (int)(sizeof(kLines)/sizeof(kLines[0]));
     if (reveal > total) reveal = total;
 
@@ -1278,8 +1290,12 @@ void renderTaskbar(AppContext& ctx) {
     if (tbButton("Task Mgr", ImVec4(0.45f,0.30f,0.20f,1))) ctx.openTaskManager = !ctx.openTaskManager;
 
     // right-aligned cluster: VOL  NET  PWR
+    // SameLine() takes an offset within the window content region, so align
+    // against GetWindowContentRegionMax().x (accounts for WindowPadding), not
+    // the raw viewport width.
     const float btnW = 64.0f, spacing = ImGui::GetStyle().ItemSpacing.x;
-    float rightX = vp->Size.x - (btnW * 3 + spacing * 2) - 12.0f;
+    float regionRight = ImGui::GetWindowContentRegionMax().x;
+    float rightX = regionRight - (btnW * 3 + spacing * 2);
     ImGui::SameLine(rightX);
     if (ImGui::Button("VOL", ImVec2(btnW, 40))) {
         ctx.openSettings = true;
@@ -1352,13 +1368,15 @@ void renderFileExplorer(AppContext& ctx) {
     static int selected = 0;
     const char* folders[] = {"Desktop", "Documents", "Downloads", "Games", "System"};
 
-    ImGui::BeginChild("tree", ImVec2(160, 0), true);
+    // v1.91.5: BeginChild's 3rd arg is ImGuiChildFlags, not bool. Use the
+    // Borders flag (passing `true`/1 would NOT set the border bit, which is 1<<1).
+    ImGui::BeginChild("tree", ImVec2(160, 0), ImGuiChildFlags_Borders);
     for (int i = 0; i < 5; ++i)
         if (ImGui::Selectable(folders[i], selected == i)) selected = i;
     ImGui::EndChild();
 
     ImGui::SameLine();
-    ImGui::BeginChild("files", ImVec2(0, 0), true);
+    ImGui::BeginChild("files", ImVec2(0, 0), ImGuiChildFlags_Borders);
     ImGui::Text("This PC > %s", folders[selected]);
     ImGui::Separator();
     static const FileEntry sets[5][3] = {
@@ -1596,7 +1614,10 @@ git add -A && git commit -m "test: end-to-end integration verified"
 
 - [ ] **Step 1: Run the app and capture each screen**
 
-Launch the app and capture: the BIOS screen, splash, desktop, and each of the three windows. Save PNGs under `docs/images/`. (On Windows, use the OS screenshot tool or the available screenshot tooling.)
+Launch the app and capture each screen using the **Windows-MCP `Screenshot`
+tool** (or the OS Snipping Tool if unavailable). Save with these exact names
+under `docs/images/`: `bios.png`, `splash.png`, `desktop.png`, `explorer.png`,
+`settings.png`, `taskmgr.png`.
 Expected: six PNGs exist under `docs/images/`.
 
 - [ ] **Step 2: Commit**
@@ -1648,9 +1669,11 @@ git add docs/images && git commit -m "docs: add application screenshots"
 9. **Testing** — how to run `ctest`, what the logic units cover.
 10. **Credits** — Dr. Neil Patrick Del Gallego; Project Anito; Dear ImGui, GLFW, stb, doctest.
 
-- [ ] **Step 2: Verify Mermaid renders**
+- [ ] **Step 2: Verify Mermaid renders (required)**
 
-Push to a branch or preview locally; confirm both Mermaid blocks render on GitHub. (Optional: view in a Markdown preview.)
+Confirm both Mermaid blocks render correctly (broken diagrams visibly hurt the
+Documentation score). Check in a Markdown preview and, after pushing, on the
+GitHub rendered view. Fix any syntax errors before considering this task done.
 
 - [ ] **Step 3: Commit**
 ```bash
