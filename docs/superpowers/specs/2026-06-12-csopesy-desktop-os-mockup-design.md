@@ -49,6 +49,9 @@ points: Desktop Composition, Taskbar, Task Manager, and Documentation.
   GLFW automatically — no manual SDK installation required.
 - **Platform/architecture:** **x64**. Visual Studio generator invoked with
   `-A x64`; MinGW toolchains are x64 by default.
+- **Window:** a single resizable GLFW window, initial size 1280×720, titled
+  "CSOPESY Desktop OS Emulator". All rendering targets the live framebuffer size,
+  so resizing reflows the desktop/taskbar automatically.
 - **Build commands (documented in README):**
   - MSVC: `cmake -B build -A x64` then `cmake --build build --config Release`
   - MinGW: `cmake -B build -G "MinGW Makefiles"` then `cmake --build build`
@@ -87,7 +90,7 @@ read/tested in isolation. Header + source pairs unless noted.
 | Unit | Responsibility |
 |------|----------------|
 | `main.cpp` | GLFW/OpenGL/ImGui init, main loop, state dispatch, clean shutdown |
-| `app_context.h` | Shared struct: state, timers, wallpaper texture id, window-open flags, volume, CPU-history buffer |
+| `app_context.h` | Shared struct: state, timers, wallpaper texture id, window-open flags, volume, `requested_settings_tab`, CPU-history buffer |
 | `boot_screen.{h,cpp}` | Renders the BIOS POST screen |
 | `splash_screen.{h,cpp}` | Renders the CSOPESY loading splash |
 | `desktop.{h,cpp}` | Full-screen wallpaper texture, real-time clock (top-right), "CSOPESY OS v1.0 — System Online" tag |
@@ -130,7 +133,9 @@ read/tested in isolation. Header + source pairs unless noted.
 - Tabbed window (`ImGui::BeginTabBar`):
   - **Display:** dark/light accent toggle, resolution combo box (cosmetic).
   - **Sound:** master volume slider bound to `AppContext::volume`; the taskbar
-    VOL button opens this tab.
+    VOL button sets `open_settings = true` and `requested_settings_tab = Sound`,
+    and the Settings window selects that tab once via `ImGuiTabItemFlags_SetSelected`
+    then clears the request.
   - **About:** read-only system specs echoing the BIOS screen (OS name/version,
     CPU Pentium III, BIOS version, RAM, drives, credit to Dr. Neil Patrick Del
     Gallego).
@@ -156,7 +161,9 @@ read/tested in isolation. Header + source pairs unless noted.
   `open_task_manager`, `volume`, and `should_shutdown`.
 - Each window renders only when its `open_*` flag is true; ImGui's built-in
   close button writes the flag back to false.
-- Task Manager appends to the CPU-history buffer each frame it is open.
+- Task Manager appends to the CPU-history buffer each frame it is open. The
+  buffer is a fixed-size ring (e.g. 90 samples) living in `AppContext`, so it
+  persists across close/reopen rather than resetting.
 
 ## 8. Wallpaper Asset Strategy
 
