@@ -43,7 +43,8 @@ add_library(csopesy_logic STATIC
     src/logic/clock_format.cpp
     src/logic/boot_state.cpp
     src/logic/process_model.cpp
-    src/logic/texture_paths.cpp)
+    src/logic/texture_paths.cpp
+    src/logic/ui_scale.cpp)
 target_include_directories(csopesy_logic PUBLIC src)
 target_compile_features(csopesy_logic PUBLIC cxx_std_20)
 
@@ -68,7 +69,8 @@ add_executable(csopesy_tests
     tests/test_boot_state.cpp
     tests/test_process_model.cpp
     tests/test_cpu_history.cpp
-    tests/test_texture_paths.cpp)
+    tests/test_texture_paths.cpp
+    tests/test_ui_scale.cpp)
 target_include_directories(csopesy_tests PRIVATE src third_party)
 target_link_libraries(csopesy_tests PRIVATE csopesy_logic)
 enable_testing()

@@ -21,6 +21,7 @@ static std::string fmtStatus(float cpu, float memPct) {
 
 void renderTaskManager(AppContext& ctx) {
     if (!ctx.openTaskManager) return;
+    const float s = ctx.uiScale;
 
     // advance the dummy values every frame the Task Manager is toggled open
     // (continues even when the window is collapsed to its title bar)
@@ -31,18 +32,18 @@ void renderTaskManager(AppContext& ctx) {
     if (memPct > 100.0f) memPct = 100.0f;   // keep the readout plausible
     ctx.cpuHistory.push(cpu);
 
-    ImGui::SetNextWindowSize(ImVec2(540, 460), ImGuiCond_FirstUseEver);
+    ImGui::SetNextWindowSize(ImVec2(540.0f * s, 460.0f * s), ImGuiCond_Once);
     if (!ImGui::Begin("Task Manager", &ctx.openTaskManager)) { ImGui::End(); return; }
 
     ImGui::TextUnformatted(fmtStatus(cpu, memPct).c_str());
     ImGui::PlotLines("##cpu", ctx.cpuHistory.data(), (int)ctx.cpuHistory.size(),
-                     0, "CPU history", 0.0f, 100.0f, ImVec2(-1, 80));
+                     0, "CPU history", 0.0f, 100.0f, ImVec2(-1, 80.0f * s));
     ImGui::Separator();
 
     if (ImGui::BeginTable("procs", 4,
             ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg |
             ImGuiTableFlags_Resizable | ImGuiTableFlags_ScrollY,
-            ImVec2(0, 260))) {
+            ImVec2(0, 260.0f * s))) {
         ImGui::TableSetupColumn("Process");
         ImGui::TableSetupColumn("PID");
         ImGui::TableSetupColumn("CPU %");

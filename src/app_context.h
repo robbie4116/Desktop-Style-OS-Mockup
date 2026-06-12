@@ -9,6 +9,8 @@ namespace csopesy {
 enum class SettingsTab { Display, Sound, About };
 
 struct AppContext {
+    float uiScale = 1.0f;
+
     // boot state machine
     AppState state = AppState::Bios;
     double   stateEnteredTime = 0.0;   // glfwGetTime() when current state began

@@ -18,7 +18,7 @@ Replace the current `tbButton()` helper (colored rectangle + text label) with tw
 - `drawIcon(ImDrawList* dl, IconType type, ImVec2 center, float size, ImU32 color)` — stateless function that draws one icon using ImDrawList primitives (AddLine, AddRect, AddCircle, AddPolyline). Takes a center point and uniform size so icons scale cleanly.
 - `tbIconButton(const char* id, IconType type, ImVec4 bg, float width)` — renders an `ImGui::InvisibleButton` for hit-testing, then uses the draw list to fill the background rect and draw the icon on top. Returns `bool` (clicked), same contract as the old helper.
 
-**Icon set** — all 1.5px stroke, round line caps and joins:
+**Icon set** — all 1.5px stroke. Note: `ImDrawList` does not support round line caps; all stroked lines render with flat/square endpoints. Where a rounder look is desirable (e.g. the power arc endpoints), a small filled circle (`AddCircleFilled`, radius = 0.75px) can be drawn at each endpoint as a best-effort approximation.
 
 | Button | IconType | Geometry |
 |--------|----------|----------|
@@ -30,7 +30,7 @@ Replace the current `tbButton()` helper (colored rectangle + text label) with tw
 | NET | `Icon_Net` | Three vertical signal bars of increasing height |
 | PWR | `Icon_Pwr` | Circle arc (gap at top) + short vertical stem at gap |
 
-Button background colors remain unchanged from the current palette. Button dimensions: 44×40px for left cluster, 56×40px for right cluster (VOL/NET/PWR).
+Button background colors remain unchanged from the current palette. Button dimensions: 44×40px for left cluster, **56×40px for right cluster (VOL/NET/PWR) — down from the current 64px**; this is a deliberate reduction to better match the icon-only proportions.
 
 ### What does NOT change
 - Button colors
@@ -42,10 +42,10 @@ Button background colors remain unchanged from the current palette. Button dimen
 ## 2. Status Label Relocation
 
 ### What changes
-- `src/render/desktop.cpp` — remove the `AddText` call at line 46 that draws "CSOPESY OS v1.0 – System Online" on the desktop canvas.
-- `src/render/taskbar.cpp` — after rendering the left button group, push a dim green color (`IM_COL32(80, 200, 100, 180)`) via `ImGui::PushStyleColor(ImGuiCol_Text, ...)`, render `ImGui::Text("CSOPESY OS v1.0 \xe2\x80\x93 System Online")`, then `ImGui::PopStyleColor()`. This places the label naturally in the center gap between the left buttons and the right cluster.
+- `src/render/desktop.cpp` — remove the `AddText` call at line 46 that draws `"CSOPESY OS v1.0 - System Online"` on the desktop canvas.
+- `src/render/taskbar.cpp` — after rendering the left button group, push a dim green color (`IM_COL32(80, 200, 100, 180)`) via `ImGui::PushStyleColor(ImGuiCol_Text, ...)`, render `ImGui::Text("CSOPESY OS v1.0 - System Online")`, then `ImGui::PopStyleColor()`. This places the label naturally in the center gap between the left buttons and the right cluster.
 
-The label text itself is unchanged. It will be slightly dimmer than the current desktop rendering (alpha 180 vs 255) to feel like secondary information within the taskbar rather than a headline.
+The label string uses an **ASCII hyphen-minus** (`-`) throughout — matching the existing string in `desktop.cpp:46` exactly. It will be slightly dimmer than the current desktop rendering (alpha 180 vs 255) to feel like secondary information within the taskbar rather than a headline.
 
 ### What does NOT change
 - The label string
@@ -68,14 +68,16 @@ BootTimings timings{3.0, 3.0};
 
 After the existing "Loading..." animated dots, add a progress bar:
 
-1. Compute `float progress = std::clamp(elapsed / duration, 0.0f, 1.0f)`.
-2. Determine bar geometry:
+1. Add `#include <algorithm>` to `splash_screen.cpp` (required for `std::clamp`).
+2. The `renderSplash` function signature is `renderSplash(const AppContext& ctx, double elapsed)`. Ensure the `ctx` parameter is named in the `.cpp` definition (the current implementation leaves it unnamed). Use `ctx.timings.splashDuration` as the duration value.
+3. Compute `float progress = std::clamp(static_cast<float>(elapsed / ctx.timings.splashDuration), 0.0f, 1.0f)`.
+4. Determine bar geometry:
    - Width: 260px, height: 3px
    - Horizontally centered in the window
    - Vertically: 16px below the bottom of the dots text
-3. Draw via ImDrawList:
+5. Draw via ImDrawList:
    - Track: `AddRectFilled(trackMin, trackMax, IM_COL32(40, 40, 40, 255))`
-   - Fill: `AddRectFilled(trackMin, ImVec2(trackMin.x + 260*progress, trackMax.y), IM_COL32(80, 230, 120, 255))`
+   - Fill: `AddRectFilled(trackMin, ImVec2(trackMin.x + 260.0f * progress, trackMax.y), IM_COL32(80, 230, 120, 255))`
    - No rounded corners (rect, not rounded rect) — matches the crisp aesthetic.
 
 The bar reaches 100% exactly as `elapsed == duration` and the state machine transitions to Desktop. The existing skip-on-keypress behaviour is unchanged — if the user skips early the bar simply won't be full.

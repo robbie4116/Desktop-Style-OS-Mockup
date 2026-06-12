@@ -8,7 +8,8 @@ struct FileEntry { const char* name; const char* type; const char* size; };
 
 void renderFileExplorer(AppContext& ctx) {
     if (!ctx.openFileExplorer) return;
-    ImGui::SetNextWindowSize(ImVec2(560, 360), ImGuiCond_FirstUseEver);
+    const float s = ctx.uiScale;
+    ImGui::SetNextWindowSize(ImVec2(560.0f * s, 360.0f * s), ImGuiCond_Once);
     if (!ImGui::Begin("File Explorer", &ctx.openFileExplorer)) { ImGui::End(); return; }
 
     static int selected = 0;
@@ -16,7 +17,7 @@ void renderFileExplorer(AppContext& ctx) {
 
     // v1.91.5: BeginChild's 3rd arg is ImGuiChildFlags, not bool. Use the
     // Borders flag (passing `true`/1 would NOT set the border bit, which is 1<<1).
-    ImGui::BeginChild("tree", ImVec2(160, 0), ImGuiChildFlags_Borders);
+    ImGui::BeginChild("tree", ImVec2(160.0f * s, 0), ImGuiChildFlags_Borders);
     for (int i = 0; i < 5; ++i)
         if (ImGui::Selectable(folders[i], selected == i)) selected = i;
     ImGui::EndChild();

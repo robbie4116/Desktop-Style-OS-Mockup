@@ -12,7 +12,8 @@ static ImGuiTabItemFlags tabFlag(AppContext& ctx, SettingsTab tab) {
 
 void renderSettings(AppContext& ctx) {
     if (!ctx.openSettings) return;
-    ImGui::SetNextWindowSize(ImVec2(460, 320), ImGuiCond_FirstUseEver);
+    const float s = ctx.uiScale;
+    ImGui::SetNextWindowSize(ImVec2(460.0f * s, 320.0f * s), ImGuiCond_Once);
     if (!ImGui::Begin("Settings", &ctx.openSettings)) { ImGui::End(); return; }
 
     if (ImGui::BeginTabBar("settabs")) {

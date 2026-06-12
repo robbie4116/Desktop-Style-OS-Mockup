@@ -7,6 +7,7 @@
 #include <string>
 #include "app_context.h"
 #include "logic/boot_state.h"
+#include "logic/ui_scale.h"
 #include "render/boot_screen.h"
 #include "render/splash_screen.h"
 #include "render/texture_loader.h"
@@ -42,10 +43,15 @@ int main(int argc, char** argv) {
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGui::StyleColorsDark();
+
+    csopesy::AppContext ctx;
+    ctx.uiScale = csopesy::calculateUiScale(w, h);
+    ImGui::GetIO().FontGlobalScale = ctx.uiScale;
+    ImGui::GetStyle().ScaleAllSizes(ctx.uiScale);
+
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
 
-    csopesy::AppContext ctx;
     ctx.stateEnteredTime = glfwGetTime();
 
     {
