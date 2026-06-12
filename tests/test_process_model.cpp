@@ -1,5 +1,6 @@
 #include "doctest.h"
 #include "logic/process_model.h"
+#include <string>
 using namespace csopesy;
 
 TEST_CASE("LCG jitter is deterministic for a given seed") {
@@ -28,4 +29,8 @@ TEST_CASE("makeDefaultProcesses returns a non-empty believable list") {
     auto v = makeDefaultProcesses();
     CHECK(v.size() >= 8);
     CHECK(std::string(v.front().name).size() > 0);
+}
+TEST_CASE("aggregateMemMB sums the rows") {
+    std::vector<ProcessRow> rows{{"a",1,0.0f,100.0f,1u},{"b",2,0.0f,200.0f,2u}};
+    CHECK(aggregateMemMB(rows) == doctest::Approx(300.0f));
 }

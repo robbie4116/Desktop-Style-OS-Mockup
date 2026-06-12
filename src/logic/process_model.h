@@ -1,5 +1,4 @@
 #pragma once
-#include <string>
 #include <vector>
 namespace csopesy {
 
@@ -11,6 +10,7 @@ struct ProcessRow {
     unsigned rng;
 };
 
+// Advance LCG, return float in [0,1). Exposed for testing; prefer updateProcess.
 float nextUnit(unsigned& state);
 void updateProcess(ProcessRow& row);
 float aggregateCpu(const std::vector<ProcessRow>& rows);

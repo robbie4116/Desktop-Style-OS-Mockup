@@ -6,8 +6,8 @@ namespace csopesy {
 // Fixed-capacity FIFO of floats with contiguous storage for ImGui::PlotLines.
 class CpuHistory {
 public:
-    explicit CpuHistory(std::size_t capacity) : cap_(capacity) {
-        buf_.reserve(capacity);
+    explicit CpuHistory(std::size_t capacity) : cap_(capacity ? capacity : 1) {
+        buf_.reserve(cap_);
     }
     void push(float v) {
         if (buf_.size() < cap_) buf_.push_back(v);
