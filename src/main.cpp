@@ -7,6 +7,8 @@
 #include "logic/boot_state.h"
 #include "render/boot_screen.h"
 #include "render/splash_screen.h"
+#include "render/texture_loader.h"
+#include "render/desktop.h"
 
 int main() {
     if (!glfwInit()) { std::fprintf(stderr, "glfwInit failed\n"); return 1; }
@@ -27,6 +29,12 @@ int main() {
 
     csopesy::AppContext ctx;
     ctx.stateEnteredTime = glfwGetTime();
+
+    {
+        csopesy::LoadedTexture wt = csopesy::loadWallpaperTexture(""); // cwd candidates
+        ctx.wallpaperTex = wt.id;
+        ctx.wallpaperLoaded = wt.ok;
+    }
 
     while (!glfwWindowShouldClose(window) && !ctx.shouldShutdown) {
         glfwPollEvents();
@@ -57,7 +65,9 @@ int main() {
         switch (ctx.state) {
             case csopesy::AppState::Bios:    csopesy::renderBootScreen(ctx, stateElapsed); break;
             case csopesy::AppState::Splash:  csopesy::renderSplash(ctx, stateElapsed); break;
-            case csopesy::AppState::Desktop: /* renderDesktop / taskbar / windows */ break;
+            case csopesy::AppState::Desktop:
+                csopesy::renderDesktopBackground(ctx);
+                break;
         }
         if (ctx.state == csopesy::AppState::Desktop) {
             ImGui::SetNextWindowPos(ImVec2(20, 20));
