@@ -13,7 +13,7 @@ struct AppContext {
     AppState state = AppState::Bios;
     double   stateEnteredTime = 0.0;   // glfwGetTime() when current state began
     bool     skipRequested = false;    // set by input handler each frame
-    BootTimings timings{3.0, 2.5};
+    BootTimings timings{3.0, 3.0};
 
     // desktop / wallpaper
     unsigned wallpaperTex = 0;         // GLuint; 0 = none
