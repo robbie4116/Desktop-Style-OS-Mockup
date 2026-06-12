@@ -30,6 +30,13 @@ void renderTaskbar(AppContext& ctx) {
     ImGui::SameLine();
     if (tbButton("Task Mgr", ImVec4(0.45f,0.30f,0.20f,1))) ctx.openTaskManager = !ctx.openTaskManager;
 
+    // Status label — centered in the gap between left cluster and right cluster
+    ImGui::SameLine();
+    ImGui::SetCursorPosY((barH - ImGui::GetTextLineHeight()) * 0.5f);
+    ImGui::PushStyleColor(ImGuiCol_Text, IM_COL32(80, 200, 100, 180));
+    ImGui::TextUnformatted("CSOPESY OS v1.0 - System Online");
+    ImGui::PopStyleColor();
+
     // right-aligned cluster: VOL  NET  PWR
     // SameLine() takes an offset within the window content region, so align
     // against GetWindowContentRegionMax().x (accounts for WindowPadding), not

@@ -41,8 +41,6 @@ void renderDesktopBackground(const AppContext& ctx) {
     fg->AddRectFilled(boxMin, boxMax, IM_COL32(20,20,30,210), 4.0f);
     fg->AddText(ImVec2(boxMin.x + pad.x, boxMin.y + pad.y), IM_COL32(230,230,235,255), clock.c_str());
 
-    // --- version tag, lower-left ---
-    fg->AddText(ImVec2(p0.x + 16, p1.y - 110),
-                IM_COL32(80,230,120,255), "CSOPESY OS v1.0 - System Online");
+
 }
 }
