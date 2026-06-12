@@ -24,7 +24,9 @@ struct AppContext {
     bool openSettings = false;
     bool openTaskManager = false;
 
-    // settings tab routing (VOL button -> Sound tab)
+    // settings tab routing (VOL button -> Sound tab).
+    // settingsTabRequested is a one-shot: renderSettings() applies the requested
+    // tab once and then clears it back to false, so it must not be left set.
     SettingsTab requestedSettingsTab = SettingsTab::Display;
     bool        settingsTabRequested = false;
 
