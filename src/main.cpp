@@ -5,6 +5,7 @@
 #include <cstdio>
 #include "app_context.h"
 #include "logic/boot_state.h"
+#include "render/boot_screen.h"
 
 int main() {
     if (!glfwInit()) { std::fprintf(stderr, "glfwInit failed\n"); return 1; }
@@ -53,11 +54,11 @@ int main() {
 
         // --- placeholder rendering (replaced in later chunks) ---
         switch (ctx.state) {
-            case csopesy::AppState::Bios:    /* renderBootScreen(ctx, stateElapsed) */ break;
+            case csopesy::AppState::Bios:    csopesy::renderBootScreen(ctx, stateElapsed); break;
             case csopesy::AppState::Splash:  /* renderSplash(ctx, stateElapsed) */ break;
             case csopesy::AppState::Desktop: /* renderDesktop / taskbar / windows */ break;
         }
-        {
+        if (ctx.state == csopesy::AppState::Desktop) {
             ImGui::SetNextWindowPos(ImVec2(20, 20));
             ImGui::Begin("state", nullptr, ImGuiWindowFlags_NoResize|ImGuiWindowFlags_AlwaysAutoResize);
             const char* names[] = {"BIOS", "SPLASH", "DESKTOP"};
