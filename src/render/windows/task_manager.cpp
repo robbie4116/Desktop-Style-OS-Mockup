@@ -22,11 +22,13 @@ static std::string fmtStatus(float cpu, float memPct) {
 void renderTaskManager(AppContext& ctx) {
     if (!ctx.openTaskManager) return;
 
-    // advance the dummy values every frame the window is open
+    // advance the dummy values every frame the Task Manager is toggled open
+    // (continues even when the window is collapsed to its title bar)
     for (auto& p : ctx.processes) updateProcess(p);
     float cpu = aggregateCpu(ctx.processes);
     float memTotal = 8192.0f; // pretend 8 GB
     float memPct = (aggregateMemMB(ctx.processes) / memTotal) * 100.0f;
+    if (memPct > 100.0f) memPct = 100.0f;   // keep the readout plausible
     ctx.cpuHistory.push(cpu);
 
     ImGui::SetNextWindowSize(ImVec2(540, 460), ImGuiCond_FirstUseEver);
