@@ -29,7 +29,7 @@ void renderFileExplorer(AppContext& ctx) {
         {{"readme.txt","Text","2 KB"},{"shortcut.lnk","Shortcut","1 KB"},{"notes.md","Markdown","4 KB"}},
         {{"resume.docx","Document","18 KB"},{"budget.xlsx","Spreadsheet","22 KB"},{"thesis.pdf","PDF","1.2 MB"}},
         {{"setup.exe","Application","44 MB"},{"image.png","Image","820 KB"},{"song.mp3","Audio","5.1 MB"}},
-        {{"anito.exe","Application","210 MB"},{"ddr_sim.exe","Application","88 MB"},{"save01.dat","Data","64 KB"}},
+        {{"arcade.exe","Application","210 MB"},{"ddr_sim.exe","Application","88 MB"},{"save01.dat","Data","64 KB"}},
         {{"kernel32.dll","System","1.1 MB"},{"config.sys","System","1 KB"},{"hosts","System","1 KB"}},
     };
     if (ImGui::BeginTable("filelist", 3,

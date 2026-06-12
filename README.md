@@ -363,8 +363,7 @@ which exercises approximately 20,000 individual checks across stress iterations)
 
 ## Credits
 
-- **Original concept & specification:** Dr. Neil Patrick Del Gallego — CSOPESY / Project Anito, De
-  La Salle University.
+- **Authors:** S09 Group 2 — Cumti, Dulatre, Hong, Pineda (De La Salle University, CSOPESY).
 - **[Dear ImGui](https://github.com/ocornut/imgui)** (v1.91.5) by Omar Cornut and contributors —
   immediate-mode GUI framework.
 - **[GLFW](https://www.glfw.org/)** (3.4) — OpenGL window and input.

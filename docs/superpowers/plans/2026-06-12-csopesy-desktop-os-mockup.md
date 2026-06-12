@@ -573,7 +573,7 @@ std::vector<ProcessRow> makeDefaultProcesses() {
         {"dwm.exe",           640,   5.7f,  98.0f, 303u},
         {"System",            4,     1.2f,  24.0f, 404u},
         {"imgui_demo.exe",    2310,  8.9f,  64.0f, 505u},
-        {"anito_engine.exe",  3001, 27.3f, 412.0f, 606u},
+        {"game_engine.exe",  3001, 27.3f, 412.0f, 606u},
         {"audiodg.exe",       1190,  0.8f,  18.0f, 707u},
         {"svchost.exe",       980,   2.0f,  76.0f, 808u},
         {"taskmgr.exe",       2780,  4.5f,  52.0f, 909u},
@@ -995,8 +995,8 @@ void renderSplash(const AppContext&, double elapsed) {
 
     center("CSOPESY", 4.0f, ImVec4(0.30f,0.45f,0.70f,1.0f), 0.34f);
     center("CSOPESY Operating System Emulator v1.0", 1.1f, ImVec4(0.8f,0.8f,0.8f,1), 0.52f);
-    center("Created By: Dr. Neil Patrick Del Gallego", 1.0f, ImVec4(0.7f,0.7f,0.7f,1), 0.57f);
-    center("Part of Project Anito", 1.0f, ImVec4(0.7f,0.7f,0.7f,1), 0.64f);
+    center("Created By: S09 Group 2 - Cumti, Dulatre, Hong, Pineda", 1.0f, ImVec4(0.7f,0.7f,0.7f,1), 0.57f);
+    center("CSOPESY - S09 Group 2", 1.0f, ImVec4(0.7f,0.7f,0.7f,1), 0.64f);
 
     int dots = (static_cast<int>(elapsed / 0.4) % 4);
     char loading[16] = "Loading";
@@ -1383,7 +1383,7 @@ void renderFileExplorer(AppContext& ctx) {
         {{"readme.txt","Text","2 KB"},{"shortcut.lnk","Shortcut","1 KB"},{"notes.md","Markdown","4 KB"}},
         {{"resume.docx","Document","18 KB"},{"budget.xlsx","Spreadsheet","22 KB"},{"thesis.pdf","PDF","1.2 MB"}},
         {{"setup.exe","Application","44 MB"},{"image.png","Image","820 KB"},{"song.mp3","Audio","5.1 MB"}},
-        {{"anito.exe","Application","210 MB"},{"ddr_sim.exe","Application","88 MB"},{"save01.dat","Data","64 KB"}},
+        {{"arcade.exe","Application","210 MB"},{"ddr_sim.exe","Application","88 MB"},{"save01.dat","Data","64 KB"}},
         {{"kernel32.dll","System","1.1 MB"},{"config.sys","System","1 KB"},{"hosts","System","1 KB"}},
     };
     if (ImGui::BeginTable("filelist", 3,
@@ -1471,8 +1471,8 @@ void renderSettings(AppContext& ctx) {
             ImGui::BulletText("Primary Master: 420 MB WDCAC2420H");
             ImGui::BulletText("Optical: CD-ROM LTN-305A");
             ImGui::Spacing();
-            ImGui::TextDisabled("Created by Dr. Neil Patrick Del Gallego");
-            ImGui::TextDisabled("Part of Project Anito");
+            ImGui::TextDisabled("Created by S09 Group 2 - Cumti, Dulatre, Hong, Pineda");
+            ImGui::TextDisabled("CSOPESY - S09 Group 2");
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();
@@ -1667,7 +1667,7 @@ git add docs/images && git commit -m "docs: add application screenshots"
 7. **Controls** — click/Esc/Enter/Space to skip boot; taskbar buttons; PWR to quit.
 8. **Code walkthrough** — 3–4 short annotated snippets: the state-machine dispatch (`main.cpp`), `advanceBootState`, the wallpaper draw + fallback, and the animated Task Manager table. Each snippet ≤25 lines with a sentence explaining it.
 9. **Testing** — how to run `ctest`, what the logic units cover.
-10. **Credits** — Dr. Neil Patrick Del Gallego; Project Anito; Dear ImGui, GLFW, stb, doctest.
+10. **Credits** — S09 Group 2 (Cumti, Dulatre, Hong, Pineda); Dear ImGui, GLFW, stb, doctest.
 
 - [ ] **Step 2: Verify Mermaid renders (required)**
 

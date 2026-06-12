@@ -137,8 +137,7 @@ read/tested in isolation. Header + source pairs unless noted.
     and the Settings window selects that tab once via `ImGuiTabItemFlags_SetSelected`
     then clears the request.
   - **About:** read-only system specs echoing the BIOS screen (OS name/version,
-    CPU Pentium III, BIOS version, RAM, drives, credit to Dr. Neil Patrick Del
-    Gallego).
+    CPU Pentium III, BIOS version, RAM, drives, credit to the project team).
 
 ### 6.5 Task Manager (rubric-critical)
 - Bordered window styled to resemble Windows Task Manager.

@@ -26,8 +26,7 @@ void renderSplash(const AppContext&, double elapsed) {
 
     center("CSOPESY", 4.0f, ImVec4(0.30f,0.45f,0.70f,1.0f), 0.34f);
     center("CSOPESY Operating System Emulator v1.0", 1.1f, ImVec4(0.8f,0.8f,0.8f,1), 0.52f);
-    center("Created By: Dr. Neil Patrick Del Gallego", 1.0f, ImVec4(0.7f,0.7f,0.7f,1), 0.57f);
-    center("Part of Project Anito", 1.0f, ImVec4(0.7f,0.7f,0.7f,1), 0.64f);
+    center("Created By: S09 Group 2 - Cumti, Dulatre, Hong, Pineda", 1.0f, ImVec4(0.7f,0.7f,0.7f,1), 0.57f);
 
     int dots = (static_cast<int>(elapsed / 0.4) % 4);
     char loading[16] = "Loading";

@@ -39,8 +39,8 @@ void renderSettings(AppContext& ctx) {
             ImGui::BulletText("Primary Master: 420 MB WDCAC2420H");
             ImGui::BulletText("Optical: CD-ROM LTN-305A");
             ImGui::Spacing();
-            ImGui::TextDisabled("Created by Dr. Neil Patrick Del Gallego");
-            ImGui::TextDisabled("Part of Project Anito");
+            ImGui::TextDisabled("Created by S09 Group 2");
+            ImGui::TextDisabled("Cumti, Dulatre, Hong, Pineda");
             ImGui::EndTabItem();
         }
         ImGui::EndTabBar();

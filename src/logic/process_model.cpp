@@ -35,7 +35,7 @@ std::vector<ProcessRow> makeDefaultProcesses() {
         {"dwm.exe",           640,   5.7f,  98.0f, 303u},
         {"System",            4,     1.2f,  24.0f, 404u},
         {"imgui_demo.exe",    2310,  8.9f,  64.0f, 505u},
-        {"anito_engine.exe",  3001, 27.3f, 412.0f, 606u},
+        {"game_engine.exe",   3001, 27.3f, 412.0f, 606u},
         {"audiodg.exe",       1190,  0.8f,  18.0f, 707u},
         {"svchost.exe",       980,   2.0f,  76.0f, 808u},
         {"taskmgr.exe",       2780,  4.5f,  52.0f, 909u},
