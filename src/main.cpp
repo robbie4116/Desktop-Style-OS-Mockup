@@ -66,7 +66,7 @@ int main() {
         // reset above (so a freshly-entered state starts at ~0.0 this frame).
         double stateElapsed = now - ctx.stateEnteredTime;
 
-        // --- placeholder rendering (replaced in later chunks) ---
+        // --- per-state rendering ---
         switch (ctx.state) {
             case csopesy::AppState::Bios:    csopesy::renderBootScreen(ctx, stateElapsed); break;
             case csopesy::AppState::Splash:  csopesy::renderSplash(ctx, stateElapsed); break;
