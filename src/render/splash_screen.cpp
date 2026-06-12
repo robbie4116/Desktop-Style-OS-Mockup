@@ -9,6 +9,7 @@ void renderSplash(const AppContext&, double elapsed) {
     ImGui::SetNextWindowSize(vp->Size);
     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0,0,0,1));
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
     ImGui::Begin("##splash", nullptr,
         ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove |
         ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBringToFrontOnFocus);
@@ -35,7 +36,7 @@ void renderSplash(const AppContext&, double elapsed) {
     center(loading, 1.1f, ImVec4(0.4f,0.8f,0.4f,1.0f), 0.80f);
 
     ImGui::End();
-    ImGui::PopStyleVar();
+    ImGui::PopStyleVar(2);
     ImGui::PopStyleColor();
 }
 }
