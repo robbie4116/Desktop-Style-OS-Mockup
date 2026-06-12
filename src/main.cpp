@@ -3,6 +3,8 @@
 #include "imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
 #include <cstdio>
+#include "app_context.h"
+#include "logic/boot_state.h"
 
 int main() {
     if (!glfwInit()) { std::fprintf(stderr, "glfwInit failed\n"); return 1; }
@@ -21,13 +23,44 @@ int main() {
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 330");
 
-    while (!glfwWindowShouldClose(window)) {
+    csopesy::AppContext ctx;
+    ctx.stateEnteredTime = glfwGetTime();
+
+    while (!glfwWindowShouldClose(window) && !ctx.shouldShutdown) {
         glfwPollEvents();
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        // state-machine rendering added in Chunk 3
+        // --- input: any click or key skips boot/splash ---
+        // NOTE: v1.91.5 removed the legacy io.KeysDown[]/io.MouseClicked[] IO arrays.
+        // Use the function-based event API exclusively.
+        ctx.skipRequested = ImGui::IsMouseClicked(ImGuiMouseButton_Left) ||
+                            ImGui::IsKeyPressed(ImGuiKey_Space, false) ||
+                            ImGui::IsKeyPressed(ImGuiKey_Enter, false) ||
+                            ImGui::IsKeyPressed(ImGuiKey_Escape, false);
+
+        // --- advance state machine ---
+        double now = glfwGetTime();
+        double elapsed = now - ctx.stateEnteredTime;
+        csopesy::AppState next = csopesy::advanceBootState(
+            ctx.state, elapsed, ctx.skipRequested, ctx.timings);
+        if (next != ctx.state) { ctx.state = next; ctx.stateEnteredTime = now; }
+
+        // --- placeholder rendering (replaced in later chunks) ---
+        switch (ctx.state) {
+            case csopesy::AppState::Bios:    /* renderBootScreen(ctx, elapsed) */ break;
+            case csopesy::AppState::Splash:  /* renderSplash(ctx, elapsed) */ break;
+            case csopesy::AppState::Desktop: /* renderDesktop / taskbar / windows */ break;
+        }
+        {
+            ImGui::SetNextWindowPos(ImVec2(20, 20));
+            ImGui::Begin("state", nullptr, ImGuiWindowFlags_NoResize|ImGuiWindowFlags_AlwaysAutoResize);
+            const char* names[] = {"BIOS", "SPLASH", "DESKTOP"};
+            ImGui::Text("state: %s  elapsed: %.1f", names[(int)ctx.state], elapsed);
+            if (ImGui::Button("PWR (quit)")) ctx.shouldShutdown = true;
+            ImGui::End();
+        }
 
         ImGui::Render();
         int w, h; glfwGetFramebufferSize(window, &w, &h);
