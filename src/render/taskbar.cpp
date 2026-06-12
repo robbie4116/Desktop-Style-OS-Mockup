@@ -55,7 +55,7 @@ static void drawIcon(ImDrawList* dl, IconType type, ImVec2 c, float sz, ImU32 co
     }
 
     case IconType::TaskMgr: {
-        const float bw   = sz * 0.22f;
+        const float bw   = sz * 0.16f;
         const float base = c.y + sz * 0.50f;
         const float xOff[3]    = { -sz * 0.36f, 0.0f, sz * 0.36f };
         const float heights[3] = {  sz * 0.42f, sz * 0.70f, sz * 0.92f };
@@ -82,7 +82,7 @@ static void drawIcon(ImDrawList* dl, IconType type, ImVec2 c, float sz, ImU32 co
     }
 
     case IconType::Net: {
-        const float bw   = sz * 0.22f;
+        const float bw   = sz * 0.16f;
         const float base = c.y + sz * 0.50f;
         const float xOff[3]    = { -sz * 0.36f, 0.0f, sz * 0.36f };
         const float heights[3] = {  sz * 0.32f, sz * 0.60f, sz * 0.92f };
@@ -114,8 +114,11 @@ static bool tbIconButton(const char* id, IconType type, ImVec4 bg, float width,
     ImVec2 size(width, 40.0f);
     bool clicked = ImGui::InvisibleButton(id, size);
     ImDrawList* dl = ImGui::GetWindowDrawList();
+    ImVec4 tinted = bg;
+    if      (ImGui::IsItemActive())   { tinted.x += 0.15f; tinted.y += 0.15f; tinted.z += 0.15f; }
+    else if (ImGui::IsItemHovered())  { tinted.x += 0.08f; tinted.y += 0.08f; tinted.z += 0.08f; }
     dl->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y),
-                      ImGui::ColorConvertFloat4ToU32(bg));
+                      ImGui::ColorConvertFloat4ToU32(tinted));
     drawIcon(dl, type,
              ImVec2(pos.x + size.x * 0.5f, pos.y + size.y * 0.5f),
              7.0f, iconColor);
