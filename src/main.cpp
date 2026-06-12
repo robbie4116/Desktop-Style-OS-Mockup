@@ -9,6 +9,7 @@
 #include "render/splash_screen.h"
 #include "render/texture_loader.h"
 #include "render/desktop.h"
+#include "render/taskbar.h"
 
 int main() {
     if (!glfwInit()) { std::fprintf(stderr, "glfwInit failed\n"); return 1; }
@@ -67,15 +68,8 @@ int main() {
             case csopesy::AppState::Splash:  csopesy::renderSplash(ctx, stateElapsed); break;
             case csopesy::AppState::Desktop:
                 csopesy::renderDesktopBackground(ctx);
+                csopesy::renderTaskbar(ctx);
                 break;
-        }
-        if (ctx.state == csopesy::AppState::Desktop) {
-            ImGui::SetNextWindowPos(ImVec2(20, 20));
-            ImGui::Begin("state", nullptr, ImGuiWindowFlags_NoResize|ImGuiWindowFlags_AlwaysAutoResize);
-            const char* names[] = {"BIOS", "SPLASH", "DESKTOP"};
-            ImGui::Text("state: %s  elapsed: %.1f", names[(int)ctx.state], stateElapsed);
-            if (ImGui::Button("PWR (quit)")) ctx.shouldShutdown = true;
-            ImGui::End();
         }
 
         ImGui::Render();
