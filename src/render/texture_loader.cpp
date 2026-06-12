@@ -13,8 +13,8 @@ namespace csopesy {
 LoadedTexture loadWallpaperTexture(const std::string& exeDir) {
     LoadedTexture out;
     for (const auto& path : wallpaperCandidatePaths(exeDir)) {
-        int w, h, comp;
-        unsigned char* px = stbi_load(path.c_str(), &w, &h, &comp, 4);
+        int w, h;
+        unsigned char* px = stbi_load(path.c_str(), &w, &h, nullptr, 4);
         if (!px) continue;
         GLuint tex = 0;
         glGenTextures(1, &tex);
@@ -25,6 +25,7 @@ LoadedTexture loadWallpaperTexture(const std::string& exeDir) {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, px);
         stbi_image_free(px);
+        glBindTexture(GL_TEXTURE_2D, 0);   // restore clean GL state
         out = {static_cast<unsigned>(tex), w, h, true};
         return out;
     }
