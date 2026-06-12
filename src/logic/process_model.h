@@ -3,7 +3,7 @@
 namespace csopesy {
 
 struct ProcessRow {
-    const char* name;
+    const char* name;   // points to a string literal (static storage)
     int   pid;
     float cpu;
     float memMB;

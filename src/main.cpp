@@ -47,17 +47,21 @@ int main() {
             ctx.state, elapsed, ctx.skipRequested, ctx.timings);
         if (next != ctx.state) { ctx.state = next; ctx.stateEnteredTime = now; }
 
+        // Elapsed time WITHIN the current state, valid after a possible transition
+        // reset above (so a freshly-entered state starts at ~0.0 this frame).
+        double stateElapsed = now - ctx.stateEnteredTime;
+
         // --- placeholder rendering (replaced in later chunks) ---
         switch (ctx.state) {
-            case csopesy::AppState::Bios:    /* renderBootScreen(ctx, elapsed) */ break;
-            case csopesy::AppState::Splash:  /* renderSplash(ctx, elapsed) */ break;
+            case csopesy::AppState::Bios:    /* renderBootScreen(ctx, stateElapsed) */ break;
+            case csopesy::AppState::Splash:  /* renderSplash(ctx, stateElapsed) */ break;
             case csopesy::AppState::Desktop: /* renderDesktop / taskbar / windows */ break;
         }
         {
             ImGui::SetNextWindowPos(ImVec2(20, 20));
             ImGui::Begin("state", nullptr, ImGuiWindowFlags_NoResize|ImGuiWindowFlags_AlwaysAutoResize);
             const char* names[] = {"BIOS", "SPLASH", "DESKTOP"};
-            ImGui::Text("state: %s  elapsed: %.1f", names[(int)ctx.state], elapsed);
+            ImGui::Text("state: %s  elapsed: %.1f", names[(int)ctx.state], stateElapsed);
             if (ImGui::Button("PWR (quit)")) ctx.shouldShutdown = true;
             ImGui::End();
         }
