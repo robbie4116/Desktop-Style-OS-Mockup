@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    // center in monitor work-area
+    // center using raw video mode dimensions (does not subtract OS taskbar)
     if (mode) {
         int mx = 0, my = 0;
         glfwGetMonitorPos(mon, &mx, &my);
@@ -95,8 +95,8 @@ int main(int argc, char** argv) {
         }
 
         ImGui::Render();
-        int w, h; glfwGetFramebufferSize(window, &w, &h);
-        glViewport(0, 0, w, h);
+        int fbW, fbH; glfwGetFramebufferSize(window, &fbW, &fbH);
+        glViewport(0, 0, fbW, fbH);
         glClearColor(0.10f, 0.10f, 0.12f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
