@@ -22,11 +22,22 @@ int main(int argc, char** argv) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(1280, 720, "CSOPESY Desktop OS Emulator", nullptr, nullptr);
+    GLFWmonitor* mon  = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = mon ? glfwGetVideoMode(mon) : nullptr;
+    int w = mode ? static_cast<int>(mode->width  * 0.75f) : 1280;
+    int h = mode ? static_cast<int>(mode->height * 0.75f) :  720;
+    GLFWwindow* window = glfwCreateWindow(w, h, "CSOPESY Desktop OS Emulator", nullptr, nullptr);
     if (!window) { std::fprintf(stderr, "glfwCreateWindow failed\n"); glfwTerminate(); return 1; }
     glfwSetWindowSizeLimits(window, 800, 500, GLFW_DONT_CARE, GLFW_DONT_CARE);
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
+
+    // center in monitor work-area
+    if (mode) {
+        int mx = 0, my = 0;
+        glfwGetMonitorPos(mon, &mx, &my);
+        glfwSetWindowPos(window, mx + (mode->width - w) / 2, my + (mode->height - h) / 2);
+    }
 
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
