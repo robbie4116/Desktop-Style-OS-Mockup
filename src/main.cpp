@@ -10,6 +10,9 @@
 #include "render/texture_loader.h"
 #include "render/desktop.h"
 #include "render/taskbar.h"
+#include "render/windows/file_explorer.h"
+#include "render/windows/settings.h"
+#include "render/windows/task_manager.h"
 
 int main() {
     if (!glfwInit()) { std::fprintf(stderr, "glfwInit failed\n"); return 1; }
@@ -70,6 +73,9 @@ int main() {
             case csopesy::AppState::Desktop:
                 csopesy::renderDesktopBackground(ctx);
                 csopesy::renderTaskbar(ctx);
+                csopesy::renderFileExplorer(ctx);
+                csopesy::renderSettings(ctx);
+                csopesy::renderTaskManager(ctx);
                 break;
         }
 
