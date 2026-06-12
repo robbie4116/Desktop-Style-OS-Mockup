@@ -3,6 +3,8 @@
 #include "imgui_impl_opengl3.h"
 #include <GLFW/glfw3.h>
 #include <cstdio>
+#include <filesystem>
+#include <string>
 #include "app_context.h"
 #include "logic/boot_state.h"
 #include "render/boot_screen.h"
@@ -14,7 +16,7 @@
 #include "render/windows/settings.h"
 #include "render/windows/task_manager.h"
 
-int main() {
+int main(int argc, char** argv) {
     if (!glfwInit()) { std::fprintf(stderr, "glfwInit failed\n"); return 1; }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -36,7 +38,9 @@ int main() {
     ctx.stateEnteredTime = glfwGetTime();
 
     {
-        csopesy::LoadedTexture wt = csopesy::loadWallpaperTexture(""); // cwd candidates
+        std::string exeDir;
+        if (argc > 0) exeDir = std::filesystem::path(argv[0]).parent_path().string();
+        csopesy::LoadedTexture wt = csopesy::loadWallpaperTexture(exeDir);
         ctx.wallpaperTex = wt.id;
         ctx.wallpaperLoaded = wt.ok;
     }
@@ -91,6 +95,7 @@ int main() {
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+    if (ctx.wallpaperTex) { GLuint t = ctx.wallpaperTex; glDeleteTextures(1, &t); }
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
